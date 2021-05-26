@@ -1,4 +1,4 @@
-package frank;
+package frank.util;
 
 public class Test {
 	
