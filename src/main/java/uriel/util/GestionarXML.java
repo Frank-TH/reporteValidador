@@ -16,17 +16,19 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import model.DatoXML;
+import model.Regla;
 
 public class GestionarXML {
 
-	public static List<DatoXML> leer(String rutaXML, String xpath) {
+	public static List<DatoXML> leer(String rutaXML, Regla regla) {
 		List<DatoXML> datos = new ArrayList<DatoXML>();
-		String[] arrayXpath = xpath.split("/");
-		String path = arrayXpath[arrayXpath.length - 2];
-		String etiqueta = arrayXpath[arrayXpath.length - 1];
+		String[] arrayXpath = InvetirArray(regla.getXPath().split("/"));
+		
+		String etiqueta = arrayXpath[0];
+		String path = arrayXpath[1];
 
-		System.out.println("Path: " + path);
-		System.out.println("Etiqueta: " + etiqueta);
+		System.out.println("Path: "+path);
+		System.out.println("Etiqueta: "+etiqueta);
 		try {
 			File archivo = new File(rutaXML);
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -34,17 +36,17 @@ public class GestionarXML {
 			Document document = documentBuilder.parse(archivo);
 			document.getDocumentElement().normalize();
 			NodeList listaEmpleados = document.getElementsByTagName(path);
-
+			
 			for (int x = 0, size = listaEmpleados.getLength(); x < size; x++) {
 				Node nodo = listaEmpleados.item(x);
 				Element element = (Element) nodo;
 				String dato = element.getElementsByTagName(etiqueta).item(0).getTextContent();
 				System.out.println(dato);
-
-				DatoXML xml = new DatoXML(path, etiqueta, dato);
+				DatoXML xml = new DatoXML(path,etiqueta,dato);
+				
 				datos.add(xml);
 			}
-
+			
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
@@ -53,6 +55,24 @@ public class GestionarXML {
 			e.printStackTrace();
 		}
 
+		
+		return datos;
+	}
+	
+	public static String[] InvetirArray(String[] numeros) {
+        String aux;
+        for (int i=0; i<numeros.length/2; i++) {
+            aux = numeros[i];
+            numeros[i] = numeros[numeros.length-1-i];
+            numeros[numeros.length-1-i] = aux;
+        }
+        return numeros;
+	}
+	
+	public static List<DatoXML> leerX(String rutaXML) {
+		List<DatoXML> datos = new ArrayList<DatoXML>();
+		
+		
 		return datos;
 	}
 }
