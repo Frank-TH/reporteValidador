@@ -1,13 +1,9 @@
 package model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
 public class Regla {
 	private String nombre;
@@ -16,4 +12,5 @@ public class Regla {
 	private Integer longitud;
 	private Boolean requerido;
 	private String regexp;//expresión regular
+	
 }

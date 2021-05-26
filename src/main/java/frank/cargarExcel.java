@@ -1,4 +1,4 @@
-package Frank;
+package frank;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,7 +59,7 @@ public class cargarExcel {
 			for (int j = 0; j < celdaTempList.size(); j++) {
 				XSSFCell celda = (XSSFCell) celdaTempList.get(j);
 				String stringCellValue = celda.toString();
-				System.out.print(stringCellValue.concat("\t\t"));
+				System.out.print(stringCellValue.concat("\t"));
 			}
 			System.out.println();
 		}
@@ -68,7 +68,7 @@ public class cargarExcel {
 
 	public static void main(String[] args) {
 
-		File f = new File("C:\\Team\\workspace\\regla\\src\\test\\resources\\datos.xlsx");
+		File f = new File("C:\\Team\\proyecto\\excel\\PaisesMonedasIdiomas.xlsx");
 		if (f.exists()) {
 			new cargarExcel(f);
 		} else {
