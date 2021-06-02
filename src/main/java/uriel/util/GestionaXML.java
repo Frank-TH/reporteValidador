@@ -18,11 +18,11 @@ import org.xml.sax.SAXException;
 import model.DatoXML;
 import model.Regla;
 
-public class GestionarXML {
+public class GestionaXML {
 
 	public static List<DatoXML> leer(String rutaXML, Regla regla) {
 		List<DatoXML> datos = new ArrayList<DatoXML>();
-		String[] arrayXpath = InvetirArray(regla.getXPath().split("/"));
+		String[] arrayXpath = invetirArray(regla.getXPath().split("/"));
 		
 		String etiqueta = arrayXpath[0];
 		String path = arrayXpath[1];
@@ -38,6 +38,7 @@ public class GestionarXML {
 			NodeList listaEmpleados = document.getElementsByTagName(path);
 			
 			for (int x = 0, size = listaEmpleados.getLength(); x < size; x++) {
+				System.out.println(listaEmpleados.getLength());
 				Node nodo = listaEmpleados.item(x);
 				Element element = (Element) nodo;
 				String dato = element.getElementsByTagName(etiqueta).item(0).getTextContent();
@@ -59,7 +60,7 @@ public class GestionarXML {
 		return datos;
 	}
 	
-	public static String[] InvetirArray(String[] numeros) {
+	private static String[] invetirArray(String[] numeros) {
         String aux;
         for (int i=0; i<numeros.length/2; i++) {
             aux = numeros[i];
@@ -69,10 +70,4 @@ public class GestionarXML {
         return numeros;
 	}
 	
-	public static List<DatoXML> leerX(String rutaXML) {
-		List<DatoXML> datos = new ArrayList<DatoXML>();
-		
-		
-		return datos;
-	}
 }
