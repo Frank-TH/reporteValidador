@@ -13,6 +13,7 @@ public class CeldaExcel {
 	private String libro;
 	private Sheet sheet;
 	private int filaTitulo;
+	private int filaFin;
 	private int colHris;
 	private int colNombre;
 	private int colFormato;

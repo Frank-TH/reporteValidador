@@ -27,8 +27,8 @@ public class GestionaXML {
 		String etiqueta = arrayXpath[0];
 		String path = arrayXpath[1];
 
-		System.out.println("Path: "+path);
-		System.out.println("Etiqueta: "+etiqueta);
+		//System.out.println("Path: "+path);
+		//System.out.println("Etiqueta: "+etiqueta);
 		try {
 			File archivo = new File(rutaXML);
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -38,11 +38,10 @@ public class GestionaXML {
 			NodeList listaEmpleados = document.getElementsByTagName(path);
 			
 			for (int x = 0, size = listaEmpleados.getLength(); x < size; x++) {
-				System.out.println(listaEmpleados.getLength());
 				Node nodo = listaEmpleados.item(x);
 				Element element = (Element) nodo;
 				String dato = element.getElementsByTagName(etiqueta).item(0).getTextContent();
-				System.out.println(dato);
+				//System.out.println(dato);
 				DatoXML xml = new DatoXML(path,etiqueta,dato);
 				
 				datos.add(xml);

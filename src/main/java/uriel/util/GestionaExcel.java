@@ -20,33 +20,39 @@ public class GestionaExcel {
 	public static List<Regla> obtenerDatos(CeldaExcel ce) {
 		List<Regla> reglas = new ArrayList<Regla>();
 		String rHris=null, rNombre=null, rFormato=null, rXPath=null, rLongitud=null, rRequerido=null, rRegexp=null;
-
-		Row row = ce.getSheet().getRow(ce.getFilaTitulo() + 1);
 		
-		if(row.getCell(ce.getColHris()) != null) {
-			rHris = row.getCell(ce.getColHris()).getStringCellValue();
-		}
-		if(row.getCell(ce.getColNombre()) != null) {
-			rNombre = row.getCell(ce.getColNombre()).getStringCellValue();
-		}
-		if(row.getCell(ce.getColFormato()) != null) {
-			rFormato = row.getCell(ce.getColFormato()).getStringCellValue();
-		}
-		if(row.getCell(ce.getColXPath()) != null) {
-			rXPath = row.getCell(ce.getColXPath()).getStringCellValue();
-		}
-		if(row.getCell(ce.getColLongitud()) != null) {
-			rLongitud = row.getCell(ce.getColLongitud()).getNumericCellValue()+"";
-		}
-		if(row.getCell(ce.getColRequerido()) != null) {
-			rRequerido = row.getCell(ce.getColRequerido()).getStringCellValue();
-		}
-		if(row.getCell(ce.getColRegexp()) != null) {
-			rRegexp = row.getCell(ce.getColRegexp()).getStringCellValue();
-		}
+		for (int i = ce.getFilaTitulo() + 1; i < ce.getFilaFin(); i++) {
+			
+			Row row = ce.getSheet().getRow(i);
+			
+			if(row.getCell(ce.getColHris()) != null) {
+				rHris = row.getCell(ce.getColHris()).getStringCellValue();
+			}
+			if(row.getCell(ce.getColNombre()) != null) {
+				rNombre = row.getCell(ce.getColNombre()).getStringCellValue();
+			}
+			if(row.getCell(ce.getColFormato()) != null) {
+				rFormato = row.getCell(ce.getColFormato()).getStringCellValue();
+			}
+			if(row.getCell(ce.getColXPath()) != null) {
+				rXPath = row.getCell(ce.getColXPath()).getStringCellValue();
+			}
+			if(row.getCell(ce.getColLongitud()) != null) {
+				rLongitud = row.getCell(ce.getColLongitud()).getNumericCellValue()+"";
+			}
+			if(row.getCell(ce.getColRequerido()) != null) {
+				rRequerido = row.getCell(ce.getColRequerido()).getStringCellValue();
+			}
+			if(row.getCell(ce.getColRegexp()) != null) {
+				rRegexp = row.getCell(ce.getColRegexp()).getStringCellValue();
+			}
 
-		Regla regla = new Regla(ce.getLibro(),rHris,rNombre,rFormato,rXPath,rLongitud,rRequerido,rRegexp);
-		reglas.add(regla);
+			Regla regla = new Regla(ce.getLibro(),rHris,rNombre,rFormato,rXPath,rLongitud,rRequerido,rRegexp);
+			reglas.add(regla);
+			
+		}
+		
+		
 
 		return reglas;
 	}
@@ -68,14 +74,21 @@ public class GestionaExcel {
 						String datoFila = sh.getRow(i).getCell(0).getStringCellValue();
 						if (datoFila.equals("HRIS Element (Entity)")) {
 							ce.setFilaTitulo(i);
+						}
+						if(datoFila.equals("")){
+							ce.setFilaFin(i);
 							break;
 						}
+					}else {
+						ce.setFilaFin(i);
+						break;
 					}
 				}
 			}
 
 			Row rw = sh.getRow(ce.getFilaTitulo());
-			System.out.println("---Fila Cabecera : " + ce.getFilaTitulo());
+			//System.out.println("---Fila Cabecera : " + ce.getFilaTitulo());
+			//System.out.println("---Fila Fin : " + ce.getFilaFin());
 
 			for (int i = 0; i <= rw.getPhysicalNumberOfCells(); i++) {
 				if (rw.getCell(i) != null) {
