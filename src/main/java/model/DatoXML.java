@@ -11,4 +11,5 @@ public class DatoXML {
 	private String path;
 	private String etiqueta;
 	private String dato;
+	private int nodo;
 }
