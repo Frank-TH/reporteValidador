@@ -2,110 +2,222 @@ package frank.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ApachePoi {
 
-	private static XSSFWorkbook libro;
-	private static XSSFWorkbook libro2;
+	final static String ruta = "C:\\Team\\proyecto\\excel\\PLUbicacion.xlsx";
+	// -----------------------------
+	static FileInputStream file;
+	static XSSFWorkbook wb;
+	static XSSFSheet sheet;
 
-	private static void EscribirExcel() {
-		String ruta = "C:\\Team\\proyecto\\excel\\reglas.xlsx";
+	private static boolean PL_ubigeo(int codigo) {
 
-		String hoja = "Job Profile";
+		List<Integer> data = new ArrayList<>();
+		try {
+			file = new FileInputStream(new File(ruta));
+			wb = new XSSFWorkbook(file);
+			sheet = wb.getSheetAt(0);
+			int numFilas = sheet.getLastRowNum();
 
-		libro = new XSSFWorkbook();
-		XSSFSheet hoja1 = libro.createSheet(hoja);
-
-		// Cabecera de la hoja excel
-		String[] header = { "CAMPO", "FORMATO", "LONGITUD","PATH" };
-		// Contenido de la hoja excel
-		String[][] document = new String[][] { 
-			// Nota : se necesita agregar por objetos 
-			{ "Job Level", "char", "0","/jp:Job_Profile_Sync/jp:Job_Profile/jp:Job_Level" },
-			{ "Management Level", "char", "0","/jp:Job_Profile_Sync/jp:Job_Profile/jp:Management_Level" } };
-
-		// Poner en negrita la cabecera (Opcional)
-		CellStyle styleExcel = libro.createCellStyle();
-		Font font = libro.createFont();
-		font.setBold(true);
-		styleExcel.setFont(font);
-
-		// Generar los datos para el documento
-
-		for (int i = 0; i <= document.length; i++) {
-			XSSFRow row = hoja1.createRow(i); // Se crea la fila
-			for (int j = 0; j < header.length; j++) {
-				if (i == 0) {
-					XSSFCell cell = row.createCell(j); // Se crean la celdas para la cabecera
-					cell.setCellValue(header[j]);
-				} else {
-					XSSFCell cell = row.createCell(j); // Se crean la celdas para el contenido
-					cell.setCellValue(document[i - 1][j]); // Se añade el contenido
+			for (int a = 1; a <= numFilas; a++) {
+				Row fila = sheet.getRow(a);
+				Cell celda = fila.getCell(2);
+				switch (celda.getCellType().toString()) {
+				case "NUMERIC":
+					data.add((int) celda.getNumericCellValue());
+					break;
 				}
 			}
-		}
+			file.close();
+			for (int valor : data) {
+				if (codigo == valor) {
+					return true;
+				}
+			}
 
-		// Crea un archivo
-
-		try (OutputStream fileOut = new FileOutputStream(ruta)) {
-
-			System.out.println("Se creo el excel");
-			libro.write(fileOut);
 		} catch (IOException e) {
-
+			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
+
+		return false;
 	}
 
-	
-	private static void LeerExcel() {
-		final String ruta = "C:\\\\Team\\\\proyecto\\\\excel\\\\reglas.xlsx";
-		//String hoja = "Job Profile";
-		
-		try (FileInputStream file = new FileInputStream(new File(ruta))) {
-			libro2 = new XSSFWorkbook(file);
-			//Obtener la hoja que se va leer 
-			XSSFSheet sheet = libro2.getSheetAt(0);
-			//Obtener todas las filas de la hoja de Excel
-			Iterator<Row> rowIterador = sheet.iterator();
-			Row row;
-			// Se recorre cada fila hasta el final
-			while (rowIterador.hasNext()) {
-				row = rowIterador.next();
-				//Se obtienen las celdas por fila
-				Iterator<Cell> cellIterador = row.cellIterator();
-				Cell cell;
-				//Se recorre cada celda
-				while(cellIterador.hasNext()) {
-					//Se obtienen la celda ne especifico y se imprime
-					cell = cellIterador.next();
-					System.out.print(cell.getStringCellValue().concat("\t"));
+	private static boolean PL_country(String codigo) {
+
+		List<String> data = new ArrayList<>();
+		try {
+			file = new FileInputStream(new File(ruta));
+			wb = new XSSFWorkbook(file);
+			sheet = wb.getSheetAt(1);
+			int numFilas = sheet.getLastRowNum();
+			for (int a = 1; a <= numFilas; a++) {
+				Row fila = sheet.getRow(a);
+				Cell celda = fila.getCell(2);
+
+				switch (celda.getCellType().toString()) {
+				case "STRING":
+					data.add(celda.getStringCellValue());
+					break;
+				default:
+					break;
 				}
-				System.out.println();
+
 			}
-			
-		} catch (Exception e) {
-			// TODO: handle exception
+			file.close();
+
+			for (String valor : data) {
+
+				if (codigo.equalsIgnoreCase(valor)) {
+					return true;
+				}
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
 		}
-		
+
+		return false;
+
 	}
-	
+
+	private static boolean PL_provincia(int codigo) {
+		List<Integer> data = new ArrayList<>();
+		try {
+			file = new FileInputStream(new File(ruta));
+			wb = new XSSFWorkbook(file);
+			sheet = wb.getSheetAt(2);
+			int numFilas = sheet.getLastRowNum();
+			for (int a = 1; a <= numFilas; a++) {
+				Row fila = sheet.getRow(a);
+				Cell celda = fila.getCell(2);
+
+				switch (celda.getCellType().toString()) {
+				case "NUMERIC":
+					data.add((int) celda.getNumericCellValue());
+					break;
+				default:
+					break;
+				}
+
+			}
+			file.close();
+
+			for (int valor : data) {
+
+				if (codigo == valor) {
+					return true;
+				}
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		return false;
+	}
+
+	private static boolean PL_tipovia(String codigo) {
+		List<String> data = new ArrayList<>();
+		try {
+			file = new FileInputStream(new File(ruta));
+			wb = new XSSFWorkbook(file);
+			sheet = wb.getSheetAt(3);
+			int numFilas = sheet.getLastRowNum();
+			for (int a = 1; a <= numFilas; a++) {
+				Row fila = sheet.getRow(a);
+				Cell celda = fila.getCell(2);
+
+				switch (celda.getCellType().toString()) {
+				case "STRING":
+					data.add(celda.getStringCellValue());
+					break;
+				default:
+					break;
+				}
+
+			}
+			file.close();
+
+			for (String valor : data) {
+
+				if (codigo.equalsIgnoreCase(valor)) {
+					return true;
+				}
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		return false;
+	}
+
+	private static boolean PL_tipozona(String codigo) {
+		List<String> data = new ArrayList<>();
+		try {
+			file = new FileInputStream(new File(ruta));
+			wb = new XSSFWorkbook(file);
+			sheet = wb.getSheetAt(4);
+			int numFilas = sheet.getLastRowNum();
+			for (int a = 1; a <= numFilas; a++) {
+				Row fila = sheet.getRow(a);
+				Cell celda = fila.getCell(2);
+
+				switch (celda.getCellType().toString()) {
+				case "STRING":
+					data.add(celda.getStringCellValue());
+					break;
+				default:
+					break;
+				}
+
+			}
+			file.close();
+
+			for (String valor : data) {
+
+				if (codigo.equalsIgnoreCase(valor)) {
+					return true;
+				}
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		return false;
+	}
+
 	public static void main(String[] args) {
-		//EscribirExcel();
-		LeerExcel();
+
+		System.out.println(PL_ubigeo(10106));
+
+		System.out.println(PL_country("ant"));
+
+		System.out.println(PL_provincia(102));
+
+		System.out.println(PL_tipovia("al"));
+
+		System.out.println(PL_tipozona("coo"));
 	}
 
 }
