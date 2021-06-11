@@ -51,8 +51,6 @@ public class GestionaExcel {
 			
 		}
 		
-		
-
 		return reglas;
 	}
 
@@ -60,7 +58,6 @@ public class GestionaExcel {
 		CeldaExcel ce = new CeldaExcel();
 		ce.setRuta(rutaExcel);
 		ce.setLibro(libro);
-
 		try {
 			FileInputStream fis = new FileInputStream(ce.getRuta());
 			Workbook wb = WorkbookFactory.create(fis);
@@ -71,7 +68,7 @@ public class GestionaExcel {
 				if (sh.getRow(i) != null) {
 					if (sh.getRow(i).getCell(0) != null) {
 						String datoFila = sh.getRow(i).getCell(0).getStringCellValue();
-						if (datoFila.equals("HRIS Element (Entity)")) {
+						if (datoFila.equals("Section")) {
 							ce.setFilaTitulo(i);
 						}
 						if(datoFila.equals("")){
@@ -90,21 +87,21 @@ public class GestionaExcel {
 			//System.out.println("---Fila Fin : " + ce.getFilaFin());
 
 			for (int i = 0; i <= rw.getPhysicalNumberOfCells(); i++) {
-				if (rw.getCell(i) != null) {
+				if (rw.getCell(i) != null) {//Regla de asignacion de valor 
 					String datoColumna = rw.getCell(i).getStringCellValue();
-					if ("HRIS Element (Entity)".equals(datoColumna)) {
+					if ("Section".equals(datoColumna)) {
 						ce.setColHris(i);
 					} else if ("FieldName".equals(datoColumna)) {
 						ce.setColNombre(i);
-					} else if ("Format".equals(datoColumna)) {
+					} else if ("Tipo de dato".equals(datoColumna)) {
 						ce.setColFormato(i);
-					} else if ("XPath".equals(datoColumna)) {
+					} else if ("xpath".equals(datoColumna)) {
 						ce.setColXPath(i);
-					} else if ("Max Length".equals(datoColumna)) {
+					} else if ("Longitud".equals(datoColumna)) {
 						ce.setColLongitud(i);
 					} else if ("Expresion Regular".equals(datoColumna)) {
 						ce.setColRegexp(i);
-					} else if ("Requerido".equals(datoColumna)) {
+					} else if ("Obligatorio".equals(datoColumna)) {
 						ce.setColRequerido(i);
 					}
 				}
