@@ -51,8 +51,6 @@ public class GestionaXML {
 					if(!regla.getXPath().equals("")) {
 						String[] arrayXpath = regla.getXPath().split("/");
 						String etiqueta = arrayXpath[arrayXpath.length - 1];
-						///orgc:Organizations/orgc:Organization/adiciona/orgc:Inactive
-						//orgc:Inactive
 						
 						String path = arrayXpath[arrayXpath.length - 2];
 						
@@ -74,6 +72,8 @@ public class GestionaXML {
 							String validaLongitud = Valida.validarLongitud(regla, xml);
 							String validaEstructura = Valida.validarEstructura(regla, pathProcesado);
 							
+							//System.out.println(etiqueta);
+							
 							if(!validaRegexp.equals("") || !validaLongitud.equals("") || !validaEstructura.equals("")) {
 								String resultado ="nodo:"+xml.getNodo()+","+regla.getHris()+",<" + xml.getEtiqueta() + ">,DatoEncontrado:" + xml.getDato() + ",";
 								resultado += validaRegexp;
@@ -81,7 +81,7 @@ public class GestionaXML {
 								resultado += validaEstructura;
 								Valida.logg += resultado + "\n";
 							}
-							//System.out.println(regla.getXPath() + " --- " + pathProcesado);
+							
 							if(!validaEstructura.equals("")) {
 								Map<String,Object> error = new HashMap<String,Object>();
 								error.put("campo", regla.getHris());
@@ -113,6 +113,7 @@ public class GestionaXML {
 							}
 						} else {
 							if(regla.getRequerido().equals("SI")) {
+								//System.out.println("-"+etiqueta+"-");
 								String resultado ="nodo:"+x+","+regla.getHris()+",<" + etiqueta + ">,Etiqueta no existe y es obligatorio\n";
 								//Valida.logg += "Etiqueta no existe -" + etiqueta+"\n";
 								Valida.logg += resultado;

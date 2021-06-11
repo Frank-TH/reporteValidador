@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -25,24 +26,31 @@ public class GestionaExcel {
 			Row row = ce.getSheet().getRow(i);
 			
 			if(row.getCell(ce.getColHris()) != null) {
+				row.getCell(ce.getColHris()).setCellType(CellType.STRING);
 				rHris = row.getCell(ce.getColHris()).getStringCellValue();
 			}
 			if(row.getCell(ce.getColNombre()) != null) {
+				row.getCell(ce.getColNombre()).setCellType(CellType.STRING);
 				rNombre = row.getCell(ce.getColNombre()).getStringCellValue();
 			}
 			if(row.getCell(ce.getColFormato()) != null) {
+				row.getCell(ce.getColFormato()).setCellType(CellType.STRING);
 				rFormato = row.getCell(ce.getColFormato()).getStringCellValue();
 			}
 			if(row.getCell(ce.getColXPath()) != null) {
+				row.getCell(ce.getColXPath()).setCellType(CellType.STRING);
 				rXPath = row.getCell(ce.getColXPath()).getStringCellValue();
 			}
 			if(row.getCell(ce.getColLongitud()) != null) {
-				rLongitud = row.getCell(ce.getColLongitud()).getNumericCellValue()+"";
+				row.getCell(ce.getColLongitud()).setCellType(CellType.STRING);
+				rLongitud = row.getCell(ce.getColLongitud()).getStringCellValue();
 			}
 			if(row.getCell(ce.getColRequerido()) != null) {
+				row.getCell(ce.getColRequerido()).setCellType(CellType.STRING);
 				rRequerido = row.getCell(ce.getColRequerido()).getStringCellValue();
 			}
 			if(row.getCell(ce.getColRegexp()) != null) {
+				row.getCell(ce.getColRegexp()).setCellType(CellType.STRING);
 				rRegexp = row.getCell(ce.getColRegexp()).getStringCellValue();
 			}
 
