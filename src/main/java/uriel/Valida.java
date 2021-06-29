@@ -1,10 +1,10 @@
 package uriel;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -23,7 +23,6 @@ import uriel.util.Salida;
 public class Valida {
 	public static String logg = "";
 	private static JSONObject jsonLogg;
-	
 
 	public static void main(String[] args) {
 		try {
@@ -32,46 +31,34 @@ public class Valida {
 			String carpetaLogg = propiedades.getProperty("carpetaLogg");
 			String urlExcel = propiedades.getProperty("urlExcel");
 			String[] configuracion = propiedades.getProperty("configuracion").split(",");
-			
+
 			for (int i = 0; i < configuracion.length; i++) {
-				validar(configuracion[i].split("\\|")[0], urlExcel, configuracion[i].split("\\|")[1], configuracion[i].split("\\|")[2], carpetaLogg+"/"+configuracion[i].split("\\|")[1]);
+				validar(configuracion[i].split("\\|")[0], urlExcel, configuracion[i].split("\\|")[1],
+						configuracion[i].split("\\|")[2], carpetaLogg + "/" + configuracion[i].split("\\|")[1]);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	private static void validar(String rutaXml, String urlExcel, String libro, String nodoPadre, String nombreSalida) {
 		jsonLogg = new JSONObject();
 		jsonLogg.put("Objeto", libro);
 		jsonLogg.put("Nombre XML", rutaXml);
 		jsonLogg.put("Equipo", "Templarios");
 		jsonLogg.put("Fecha", new Date());
-		
-		//System.out.println(urlExcel);
-		
+
 		CeldaExcel ce = GestionaExcel.obtenerCeldas(urlExcel, libro);// Identificar las columnas y las filas a extraer
 		List<Regla> reglas = GestionaExcel.obtenerDatos(ce);// Leer excel y obtener reglas
-		//System.out.println(reglas);
-		Map<String,Object> datosXml = GestionaXML.leerValidar(rutaXml, reglas, nodoPadre);// leer xml, obtener datos y armar ambos logg (json, txt)
+		Map<String, Object> datosXml = GestionaXML.leerValidar(rutaXml, reglas, nodoPadre);// leer xml, obtener datos y armar ambos logg (json, txt)
 
 		jsonLogg.put("informe", datosXml);
 		Salida.imprimirJson(jsonLogg, nombreSalida);
-		Salida.imprimir(logg,nombreSalida);
-		logg="";
+		Salida.imprimir(logg, nombreSalida);
+		logg = "";
 	}
-	
-	public static List<File> obtenerRutas(File folder) {
-		List<File> rutas = new ArrayList<File>();
-		for (File file : folder.listFiles()) {
-			if (!file.isDirectory()) {
-				rutas.add(file);
-			}
-		}
-		return rutas;
-	}
-	
+
 	public static String validarEstructura(Regla regla, String pathProcesado) {
 		if (regla.getXPath() == null || regla.getXPath().equals("")) {
 			return "[[[Estructura XML (Xpath)]]]";
@@ -112,11 +99,30 @@ public class Valida {
 		}
 	}
 
-	/*
-	 * private static String validarRequerido(Regla regla, DatoXML dato) {
-	 * if(regla.getRequerido() == null || regla.getRequerido().equals("")) { return
-	 * "[[[Requerido]]]"; }
-	 * 
-	 * if (dato.getDato()) { return "[Requerido]"; } else { return ""; } }
-	 */
+	public static String validarObligatorio(Regla regla, DatoXML dato) {
+		if (regla.getRequerido() == null || regla.getRequerido().equals("")) {
+			return "[[[Obligatorio]]]";
+		}
+
+		if ((dato.getDato()=="" || dato.getDato()==null) && regla.getRequerido().equals("SI") ) {
+			return "[Obligatorio]";
+		} else {
+			return "";
+		}
+	}
+	
+	/*public static String validarListado(Regla regla, DatoXML dato) {
+		if (regla.getFormato() == null || regla.getFormato().equals("")) {
+			return "[[[Tipo Dato]]]";
+		}
+		
+		Map<String,String> pl = GestionaExcel.obtenerPickListCeldas(logg, logg, logg)
+
+		if (!pl.contains(dato.getDato())) {
+			return "[Tipo Dato]";
+		} else {
+			return "";
+		}
+	}*/
+
 }

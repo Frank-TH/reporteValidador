@@ -22,7 +22,6 @@ import model.Regla;
 import uriel.Valida;
 
 public class GestionaXML {
-	private static List<String> pathObtenido = new ArrayList<String>();
 
 	public static Map<String,Object> leerValidar(String rutaXML, List<Regla> reglas, String nodoPadre) {
 		Map<String,Object> errorValidacion = new HashMap<String,Object>();
@@ -35,11 +34,22 @@ public class GestionaXML {
 			Document document = documentBuilder.parse(archivo);
 			document.getDocumentElement().normalize();
 			String nodoAbuelo = document.getDocumentElement().getTagName();
-			NodeList listaEmpleados = document.getElementsByTagName(nodoPadre);
+			NodeList listaEmpleadosTotal = document.getElementsByTagName(nodoPadre);
+			//NodeList listaEmpleadosTotal = document.getChildNodes();
+			List<Node> listaEmpleados = new ArrayList<Node>();
+			//List<Object> listaEmpleados2 = new ArrayList<Object>();
+
+			for (int x = 0, size = listaEmpleadosTotal.getLength(); x < size; x++) {
+				if(listaEmpleadosTotal.item(x).getParentNode().getNodeName().equals(nodoAbuelo)) {
+					Node node = listaEmpleadosTotal.item(x);
+					listaEmpleados.add(node);
+				}
+			}
+			//listaEmpleados = list.getChildNodes();
 			
-			for (int x = 0, size = listaEmpleados.getLength(); x < size; x++) {
-				Valida.logg+="\n\n";
-				Node nodo = listaEmpleados.item(x);
+			for (int x = 0, size = listaEmpleados.size(); x < size; x++) {
+				Valida.logg+="\n";
+				Node nodo = listaEmpleados.get(x);
 				Element element = (Element) nodo;
 				List<DatoXML> datos = new ArrayList<DatoXML>();
 				
@@ -55,14 +65,7 @@ public class GestionaXML {
 						String path = arrayXpath[arrayXpath.length - 2];
 						
 						if(element.getElementsByTagName(etiqueta).item(0)!=null) {//posibiidad de exisitir mas de una etiqueta con el mismo nombre
-							buscarPadre(element,nodoPadre,etiqueta);
-							pathObtenido.add(nodoAbuelo);;
-							
-							String pathProcesado="";
-							for (int i = pathObtenido.size()-1; i >= 0; i--) {
-								pathProcesado+="/"+pathObtenido.get(i);
-							}
-							pathObtenido.clear();
+							String pathProcesado = obtenerArbolNodos(element, nodoAbuelo, nodoPadre, etiqueta);
 							
 							String dato = element.getElementsByTagName(etiqueta).item(0).getTextContent();
 							DatoXML xml = new DatoXML(path, etiqueta, dato,x);
@@ -71,60 +74,40 @@ public class GestionaXML {
 							String validaRegexp = Valida.validarRegexp(regla, xml);
 							String validaLongitud = Valida.validarLongitud(regla, xml);
 							String validaEstructura = Valida.validarEstructura(regla, pathProcesado);
+							String validaObligatorio = Valida.validarObligatorio(regla, xml);
 							
 							//System.out.println(etiqueta);
 							
 							if(!validaRegexp.equals("") || !validaLongitud.equals("") || !validaEstructura.equals("")) {
-								String resultado ="nodo:"+xml.getNodo()+","+regla.getHris()+",<" + xml.getEtiqueta() + ">,DatoEncontrado:" + xml.getDato() + ",";
+								String resultado ="nodo:"+xml.getNodo()+","+regla.getNombre().replace("\n", "")+",<" + xml.getEtiqueta().replace("\n", "") + ">,DatoEncontrado:" + xml.getDato() + ",";
 								resultado += validaRegexp;
 								resultado += validaLongitud;
 								resultado += validaEstructura;
+								resultado += validaObligatorio;
 								Valida.logg += resultado + "\n";
 							}
 							
 							if(!validaEstructura.equals("")) {
-								Map<String,Object> error = new HashMap<String,Object>();
-								error.put("campo", regla.getHris());
-								error.put("tipoError", "Estructura Xml");
-								error.put("descripcion", regla.getNombre());
-								error.put("valorEncontrado", pathProcesado);
-								error.put("valorEsperado", regla.getXPath());
-								listError.add(error);
+								listError.add(agregarErrorJson(regla, "Estructura XML", pathProcesado, regla.getXPath()));
 							}
 							
 							if(!validaRegexp.equals("")) {
-								Map<String,Object> error = new HashMap<String,Object>();
-								error.put("campo", regla.getHris());
-								error.put("tipoError", "Expresión Regular");
-								error.put("descripcion", regla.getNombre());
-								error.put("valorEncontrado", xml.getDato());
-								error.put("valorEsperado", regla.getRegexp());
-								listError.add(error);
+								listError.add(agregarErrorJson(regla, "Expresión Regular", xml.getDato(), regla.getRegexp()));
 							}
 							
 							if(!validaLongitud.equals("")) {
-								Map<String,Object> error = new HashMap<String,Object>();
-								error.put("campo", regla.getHris());
-								error.put("tipoError", "Max Length");
-								error.put("descripcion", regla.getNombre());
-								error.put("valorEncontrado", xml.getDato());
-								error.put("valorEsperado", regla.getLongitud());
-								listError.add(error);
+								listError.add(agregarErrorJson(regla, "Longitud", xml.getDato(), regla.getLongitud()));
+							}
+							
+							if(!validaObligatorio.equals("")) {
+								listError.add(agregarErrorJson(regla, "Obligatorio", xml.getDato(), regla.getRequerido()));
 							}
 						} else {
 							if(regla.getRequerido().equals("SI")) {
-								//System.out.println("-"+etiqueta+"-");
-								String resultado ="nodo:"+x+","+regla.getHris()+",<" + etiqueta + ">,Etiqueta no existe y es obligatorio\n";
-								//Valida.logg += "Etiqueta no existe -" + etiqueta+"\n";
+								String resultado ="nodo:"+x+","+regla.getNombre()+",<" + etiqueta + ">,Etiqueta no existe y es obligatorio\n";
 								Valida.logg += resultado;
 								
-								Map<String,Object> error = new HashMap<String,Object>();
-								error.put("campo", regla.getHris());
-								error.put("tipoError", "Estructura Xml");
-								error.put("descripcion", regla.getNombre());
-								error.put("valorEncontrado", "No encontrado y es requerido");
-								error.put("valorEsperado", regla.getXPath());
-								listError.add(error);
+								listError.add(agregarErrorJson(regla, "Estructura Xml", "Etiqueta no existe y es obligatorio", regla.getXPath()));
 							}
 							
 						}
@@ -151,14 +134,33 @@ public class GestionaXML {
 		return errorValidacion;
 	}
 	
-	public static void buscarPadre(Element element,String nodoPadre,String etiqueta){
-		String padre = element.getElementsByTagName(etiqueta).item(0).getParentNode().getNodeName();
-		pathObtenido.add(etiqueta);
-		if(!padre.endsWith(nodoPadre)) {
-			buscarPadre(element,nodoPadre,padre);
-		}else {
-			pathObtenido.add(padre);
+	public static String obtenerArbolNodos(Element element,String nodoAbuelo, String nodoPadre,String etiqueta){
+		List<String> arbolNodo = new ArrayList<String>();
+		String pathProcesado="";
+		
+		while (!etiqueta.endsWith(nodoPadre)) {
+			arbolNodo.add(etiqueta);
+			etiqueta = element.getElementsByTagName(etiqueta).item(0).getParentNode().getNodeName();
 		}
+		arbolNodo.add(nodoPadre);
+		arbolNodo.add(nodoAbuelo);
+		
+		for (int i = arbolNodo.size()-1; i >= 0; i--) {
+			pathProcesado+="/"+arbolNodo.get(i);
+		}
+		
+		return pathProcesado;
+	}
+	
+	public static Map<String,Object> agregarErrorJson(Regla regla, String tipoError, String valorEncontrado, String valorEsperado){
+		Map<String,Object> error = new HashMap<String,Object>();
+		error.put("campo", regla.getNombre().replace("\n", ""));
+		error.put("tipoError", tipoError);
+		error.put("descripcion", regla.getHris().replace("\n", ""));
+		error.put("valorEncontrado", valorEncontrado);
+		error.put("valorEsperado", valorEsperado);
+		
+		return error;
 	}
 
 }
